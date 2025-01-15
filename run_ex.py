@@ -15,8 +15,8 @@ def get_frame() :
         _, frame = cap.read()
         imgencode = cv2.imencode('.jpg', frame)[1]
         stringData = imgencode.tostring()
-        yield (b'--frame\r\n'
-                b'Content-Type: text/plain\r\n\r\n' + stringData + b'\r\n')
+        yield (b'--frame/r/n'
+                b'Content-Type: text/plain/r/n/r/n' + stringData + b'/r/n')
 
     del(cap)
 

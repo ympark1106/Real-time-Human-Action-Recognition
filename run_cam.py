@@ -120,7 +120,8 @@ def main(args):
         print("Using default GPU (or CPU if no GPU available).")
 
     # 웹캠 초기화
-    cap = cv2.VideoCapture(cv2.CAP_DSHOW + 0)
+    # cap = cv2.VideoCapture(cv2.CAP_DSHOW + 0)
+    cap = cv2.VideoCapture(0, cv2.CAP_V4L)
     if not cap.isOpened():
         print("Error: Unable to open webcam.")
         return

@@ -6,8 +6,8 @@ import sys
 import argparse
 sys.path.append(str('C:/Users/USER/Workspace/HAL/'))
 
-from yolov9.yolo_runner import run_yolo
-from pytorch_openpose.openpose_runner import load_openpose_model, process_with_openpose
+from yolov9.yolo_runner import YoloRunner
+from pytorch_openpose.openpose_runner import OpenPoseRunner
 from sort.sort import Sort  # SORT 추가
 from st_gcn.stgcn_runner import STGCNRunner  # ST-GCN 실행 모듈
 
@@ -45,7 +45,7 @@ def main(args):
         print("Using default GPU (or CPU if no GPU available).")
 
     # OpenPose 모델 로드
-    openpose_model = load_openpose_model()
+    openpose_model = OpenPoseRunner(OPENPOSE_MODEL_PATH)
 
     # SORT 객체 추적 초기화
     tracker = Sort()
@@ -70,7 +70,7 @@ def main(args):
         start_time = time.time()
 
         # YOLO 실행
-        person_list, im0 = run_yolo(frame, YOLO_WEIGHTS)
+        person_list, im0 = YoloRunner(frame, YOLO_WEIGHTS)
 
         # 사람이 감지되지 않았을 때
         if len(person_list) == 0:
@@ -96,7 +96,7 @@ def main(args):
                     continue
 
                 try:
-                    _, skeleton, _ = process_with_openpose(openpose_model, crop_img)
+                    _, skeleton, _ = OpenPoseRunner(openpose_model, crop_img)
                     skeleton_data.append(skeleton)
                 except Exception as e:
                     print(f"Error during OpenPose processing: {e}")

@@ -21,11 +21,11 @@ def get_parser():
         description='Spatial Temporal Graph Convolution Network')
     parser.add_argument(
         '--work-dir',
-        default='./work_dir/temp',
+        default='./work_dir/bpsd',
         help='the work folder for storing results')
     parser.add_argument(
         '--config',
-        default='./config/NTU-RGB-D/xview/ST_GCN.yaml',
+        default='./config/st_gcn/bpsd-skeleton/train.yaml',
         help='path to the configuration file')
 
     # processor
@@ -69,7 +69,7 @@ def get_parser():
 
     # feeder
     parser.add_argument(
-        '--feeder', default='feeder.feeder', help='data loader will be used')
+        '--feeder', default='feeder.feeder_bpsd', help='data loader will be used')
     parser.add_argument(
         '--num-worker',
         type=int,
@@ -112,6 +112,7 @@ def get_parser():
         nargs='+',
         help='the epoch where optimizer reduce the learning rate')
     parser.add_argument(
+        '-g',
         '--device',
         type=int,
         default=0,
@@ -349,32 +350,36 @@ class Processor():
             loss_value = []
             score_frag = []
             for batch_idx, (data, label) in enumerate(self.data_loader[ln]):
-                data = Variable(
-                    data.float().cuda(self.output_device),
-                    requires_grad=False,
-                    volatile=True)
-                label = Variable(
-                    label.long().cuda(self.output_device),
-                    requires_grad=False,
-                    volatile=True)
-                output = self.model(data)
-                loss = self.loss(output, label)
-                score_frag.append(output.data.cpu().numpy())
-                loss_value.append(loss.data[0])
+                # No need for Variable and volatile, use torch.no_grad()
+                with torch.no_grad():
+                    data = data.float().cuda(self.output_device)
+                    label = label.long().cuda(self.output_device)
+                    output = self.model(data)
+                    loss = self.loss(output, label)
+
+                    # Use .item() instead of loss.data[0]
+                    score_frag.append(output.data.cpu().numpy())
+                    loss_value.append(loss.item())
+            
+            # Process scores
             score = np.concatenate(score_frag)
             score_dict = dict(
                 zip(self.data_loader[ln].dataset.sample_name, score))
+
             self.print_log('\tMean {} loss of {} batches: {}.'.format(
                 ln, len(self.data_loader[ln]), np.mean(loss_value)))
-            self._summary_writer.add_scalar('epoch_loss/test', np.mean(loss_value), global_step=epoch + 1)
+            self._summary_writer.add_scalar(
+                'epoch_loss/test', np.mean(loss_value), global_step=epoch + 1)
 
+            # Top-k accuracy
             for k in self.arg.show_topk:
                 self.print_log('\tTop{}: {:.2f}%'.format(
                     k, 100 * self.data_loader[ln].dataset.top_k(score, k)))
 
+            # Save scores
             if save_score:
                 with open('{}/epoch{}_{}_score.pkl'.format(
-                        self.arg.work_dir, epoch + 1, ln), 'w') as f:
+                        self.arg.work_dir, epoch + 1, ln), 'wb') as f:  # 'w' -> 'wb'
                     pickle.dump(score_dict, f)
 
     def start(self):

@@ -7,6 +7,7 @@ sys.path.append(str(OPENPOSE_ROOT))
 from src.body import Body
 from src.util import draw_bodypose
 
+
 class OpenPoseRunner:
     def __init__(self, model_path):
         """

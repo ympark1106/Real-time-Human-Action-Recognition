@@ -24,7 +24,7 @@ openpose_runner = OpenPoseRunner(OPENPOSE_MODEL_PATH)
 tracker = Sort()
 
 # 웹캠 초기화
-cap = cv2.VideoCapture(cv2.CAP_DSHOW + 0)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     raise RuntimeError("Error: Unable to open webcam.")
 

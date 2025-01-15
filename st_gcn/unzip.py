@@ -1,9 +1,9 @@
 import zipfile
 import os
 
-zip_path = "C:\\Users\\USER\\Workspace\\HAL\\st_gcn\\nturgbd_skeletons_s001_to_s017.zip"
+zip_path = "/SSDe/youmin_park/Real-time-Human-Action-Recognition/st_gcn/kinetics-skeleton.zip"
 
-extract_to = "C:\\Users\\USER\\Workspace\\HAL\\st_gcn\\nturgbd_skeletons"
+extract_to = "/SSDe/youmin_park/Real-time-Human-Action-Recognition/st_gcn/data/KINETICS/"
 
 if not os.path.exists(extract_to):
     os.makedirs(extract_to)

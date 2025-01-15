@@ -162,8 +162,14 @@ def test(data_path, label_path, vid=None):
                 plt.pause(1)
 
 
+# if __name__ == '__main__':
+#     data_path = "./data/NTU-RGB-D/xview/val_data.npy"
+#     label_path = "./data/NTU-RGB-D/xview/val_label.pkl"
+
+#     test(data_path, label_path, vid='S003C001P017R001A044')
+
 if __name__ == '__main__':
-    data_path = "./data/NTU-RGB-D/xview/val_data.npy"
-    label_path = "./data/NTU-RGB-D/xview/val_label.pkl"
+    data_path = "./data/NTU-RGB-D/xview_bpsd/val_data.npy"
+    label_path = "./data/NTU-RGB-D/xview_bpsd/val_label.pkl"
 
     test(data_path, label_path, vid='S003C001P017R001A044')
